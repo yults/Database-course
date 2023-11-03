@@ -1,0 +1,17 @@
+Домашнее задание 4. Нормализация БД «Университет»
+Дано отношение с атрибутами StudentId, StudentName, GroupId, GroupName, CourseId, CourseName, LecturerId, LecturerName, Mark. И функциональными зависимостями:
+
+StudentId → StudentName, GroupId, GroupName;
+GroupId → GroupName;
+GroupName → GroupId;
+CourseId → CourseName;
+LecturerId → LecturerName;
+StudentId, CourseId → Mark;
+GroupId, CourseId → LecturerId, LecturerName.
+Инкрементально приведите данное отношение в пятую нормальную форму.
+Постройте соответствующую модель сущность-связь.
+Постройте соответствующую физическую модель.
+Реализуйте SQL-скрипты, создающие схему базы данных.
+Создайте базу данных по спроектированной модели.
+Заполните базу тестовыми данными.
+Форма для сдачи ДЗ

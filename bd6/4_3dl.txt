@@ -1,0 +1,8 @@
+SuccessMark(StudentId, CourseId) :-
+    Marks(StudentId, CourseId, Mark), 
+    Mark > 2.
+StudentCourseNameFailers(StudentName, CourseName) :-
+    Students(StudentId, StudentName, GroupId), 
+    Plan(GroupId, CourseId, _),
+    Courses(CourseId, CourseName),
+    ¬ SuccessMark(StudentId, CourseId).

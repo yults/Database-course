@@ -1,0 +1,151 @@
+1. Функциональные зависимости *
+Функциональные зависимости должны быть заданы по одной на строке в формате «A, B -> D, E». 
+
+Названия атрибутов должны быть как в условии ДЗ.
+GroupId -> GroupName
+GroupName -> GroupId
+LecturerId -> LecturerName
+CourseId -> CourseName
+StudentId -> StudentName, GroupId
+GroupId, CourseId -> LecturerId
+StudentId, CourseId -> Mark
+2. Ключи
+2.1. Процесс определения ключей *
+Текст в свободной форме
+StudentId, CourseId невозможно вывести, так как их нет в правой части, значит они должны входить в ключ:
+
+(I). {все} / {StudentId} = { CourseId, CourseName, StudentName, GroupId, GroupName, LecturerId, LecturerName, Mark } - не содержит StudentId
+{все} / {CourseId} = { StudentId, CourseName, StudentName, GroupId, GroupName, LecturerId, LecturerName, Mark } - не содержит CourseId
+
+(II). Аналогично можно проделать с другими атрибутами и заметить, что замыкание без какого либо атрибута кроме StudentId, CourseId будет включать удаленный атрибут, пример:
+1. {все} / {GroupId} = { StudentId, CourseId, CourseName, StudentName, GroupId, GroupName, LecturerId, LecturerName, Mark } - содержит GroupId, так как оно вывелось из GroupName
+2. Удалим LecturerId, он выводится из {GroupId, CourseId} - получаем замыкание множество всех атрибутов которое содержит LecturerId
+остальные кратко: 
+3. GroupName из GroupId
+4. LecturerName из LecturerId
+5. CourseName из CourseId
+6. Mark из StudentId, CourseId
+7. StudentName из StudentId
+
+(III). {StudentId, CourseId}+ = {StudentId, CourseId, CourseName, StudentName, GroupId, GroupName, LecturerId, LecturerName, Mark} - замыкание множество всех атрибутов => надключ. В пункте (I) уже разбиралось, почему мы не можем выкинуть из ключа ни StudentId ни CourseId, а если начнем добавлять новых атрибутов в надключ, то он перестанет быть минимальным по включению, поэтому {StudentId, CourseId} является единственным ключом
+2.2. Полученные ключи *
+По одному на строке в формате «A, B, C»
+StudentId, CourseId
+3. Замыкания множества атрибутов
+3.1. GroupId, CourseId *
+Последовательность построения замыкания после каждого его расширения, по одному множеству на строке в формате  «A, B, C».
+
+В первой строке должно быть исходное множество, а в последней — само замыкание.
+GroupId, CourseId
+GroupId, CourseId, GroupName
+GroupId, CourseId, GroupName, CourseName
+GroupId, CourseId, GroupName, CourseName, LecturerId
+GroupId, CourseId, GroupName, CourseName, LecturerId, LecturerName
+3.2. StudentId, CourseId *
+В формате из пункта 3.1.
+StudentId, CourseId
+StudentId, CourseId, CourseName
+StudentId, CourseId, CourseName, StudentName, GroupId
+StudentId, CourseId, CourseName, StudentName, GroupId, GroupName
+StudentId, CourseId, CourseName, StudentName, GroupId, GroupName, LecturerId
+StudentId, CourseId, CourseName, StudentName, GroupId, GroupName, LecturerId, LecturerName
+StudentId, CourseId, CourseName, StudentName, GroupId, GroupName, LecturerId, LecturerName
+StudentId, CourseId, CourseName, StudentName, GroupId, GroupName, LecturerId, LecturerName, Mark
+3.3. StudentId, LecturerId *
+В формате из пункта 3.1.
+StudentId, LecturerId
+StudentId, LecturerId, LecturerName
+StudentId, LecturerId, LecturerName, StudentName, GroupId
+StudentId, LecturerId, LecturerName, StudentName, GroupId, GroupName
+4. Неприводимое множество функциональных зависимостей
+4.1d. Первый этап *
+Описание процесса (текст в свободной форме)
+По правилу расщепления делаем все правые части единичные. Есть только одно ФЗ, у которого справа два атрибута :
+StudentId -> StudentName, GroupId 
+<=> (X -> YZ <=> X -> Y, X -> Z) 
+StudentId -> StudentName, StudentId -> GroupId. 
+Теперь во всех правых частях по одному атрибуту
+4.1r. Результаты первого этапа *
+В формате из пункта 1
+GroupId -> GroupName
+GroupName -> GroupId
+LecturerId -> LecturerName
+CourseId -> CourseName
+StudentId -> StudentName
+StudentId -> GroupId
+GroupId, CourseId -> LecturerId
+StudentId, CourseId -> Mark
+4.2d. Второй этап *
+Описание процесса (текст в свободной форме)
+Для левой части каждого правила пытаемся удалить по одному атрибуту. Возьмем те ФЗ в которых есть несколько атрибутов в левой части:
+
+GroupId, CourseId -> LecturerId
+{ GroupId, CourseId }+ = { GroupId, CourseId, GroupName, CourseName, LecturerId, LecturerName }
+{ GroupId }+ = { GroupId, GroupName } - не содержит LecturerId, GroupId не можем удалить
+{ CourseId }+ = { CourseId, CourseName } - не содержит LecturerId, CourseId не можем удалить
+Не можем удалить ни GroupId ни CourseId, ФЗ оставляем в неизменном виде
+
+StudentId, CourseId -> Mark 
+{ StudentId, CourseId }+ = { StudentId, CourseId, CourseName, StudentName, GroupId, GroupName, LecturerId, LecturerName, Mark } - т.е все атрибуты
+{ StudentId }+ = { StudentId, StudentName, GroupId, GroupName } - не содержит Mark, StudentId не можем удалить
+{ CourseId }+ = { CourseId, CourseName } - не содержит Mark, CourseId не можем удалить
+Не можем удалить ни StudentId ни CourseId, ФЗ оставляем в неизменном виде
+
+Таким образом, оставляем все как было на первом этапе
+4.2r. Результаты второго этапа *
+В формате из пункта 1
+GroupId -> GroupName
+GroupName -> GroupId
+LecturerId -> LecturerName
+CourseId -> CourseName
+StudentId -> StudentName
+StudentId -> GroupId
+GroupId, CourseId -> LecturerId
+StudentId, CourseId -> Mark
+4.3d. Третий этап *
+Описание процесса (текст в свободной форме)
+Пытаемся удалить по одному правилу. 
+
+1.GroupId -> GroupName
+{ GroupId }+ = { GroupId, GroupName }
+{ GroupId }+ / ФЗ1 = { GroupId } - не содержит GroupName, не удаляем
+
+2.GroupName -> GroupId
+{ GroupName }+ -> { GroupId, GroupName }
+{ GroupName }+ / ФЗ2 = { GroupName } - не содержит GroupId, не удаляем
+
+3.LecturerId -> LecturerName
+{ LecturerId }+ -> { LecturerId, LecturerName }
+{ LecturerId }+ / ФЗ3 = { LecturerId } - не содержит LecturerName, не удаляем
+
+4.CourseId -> CourseName
+{ CourseId }+ -> { CourseId, CourseName }
+{ CourseId }+ / ФЗ4 = { CourseId } - не содержит CourseName, не удаляем
+
+5.StudentId -> StudentName
+{ StudentId }+ -> { StudentId, StudentName, GroupId, GroupName }
+{ StudentId }+ / ФЗ5 = { StudentId, GroupId, GroupName } - не содержит StudentName, не удаляем
+
+6.StudentId -> GroupId
+{ StudentId }+ -> { StudentId, StudentName, GroupId, GroupName }
+{ StudentId }+ / ФЗ6 = { StudentId, StudentName } - не содержит GroupId, не удаляем
+
+7.GroupId, CourseId -> LecturerId
+{ GroupId, CourseId }+ = { GroupId, CourseId, GroupName, CourseName, LecturerId, LecturerName } 
+{ GroupId, CourseId }+ / ФЗ7 =  { GroupId, CourseId, GroupName, CourseName }  - не содержит LecturerId, не удаляем
+
+8.StudentId, CourseId -> Mark
+{ StudentId, CourseId }+ = { StudentId, CourseId, CourseName, StudentName, GroupId, GroupName, LecturerId, LecturerName, Mark } 
+{ StudentId, CourseId }+ / ФЗ8 =  { StudentId, CourseId, CourseName, StudentName, GroupId, GroupName, LecturerId, LecturerName }  - не содержит Mark, не удаляем
+
+Таким образом, оставляем все как было на втором этапе, ни одно правило не удалилось
+4.3r. Результаты третьего этапа *
+В формате из пункта 1
+GroupId -> GroupName
+GroupName -> GroupId
+LecturerId -> LecturerName
+CourseId -> CourseName
+StudentId -> StudentName
+StudentId -> GroupId
+GroupId, CourseId -> LecturerId
+StudentId, CourseId -> Mark

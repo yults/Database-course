@@ -1,0 +1,9 @@
+StudentCourseIdIn(StudentId, CourseId) :-
+    Students(StudentId, _, GroupId), Plan(GroupId, CourseId, _).
+StudentCourseIdOut(StudentId, CourseId) :- 
+    Marks(StudentId, CourseId, _).
+StudentCourseName(StudentName, CourseName) :-
+    Students(StudentId, StudentName, _), 
+    Courses(CourseId, CourseName),
+    ¬ StudentCourseIdOut(StudentId, CourseId),
+    StudentCourseIdIn(StudentId, CourseId).

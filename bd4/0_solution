@@ -1,0 +1,170 @@
+1. Первая нормальная форма
+1.1. Описание *
+Дано отношение с атрибутами StudentId, StudentName, GroupId, GroupName, CourseId, CourseName, LecturerId, LecturerName, Mark. И функциональными зависимостями:
+
+StudentId → StudentName, GroupId, GroupName;
+GroupId → GroupName;
+GroupName → GroupId;
+CourseId → CourseName;
+LecturerId → LecturerName;
+StudentId, CourseId → Mark;
+GroupId, CourseId → LecturerId, LecturerName.
+
+В отношении нет повторяющихся групп, все атрибуты атомарны, у отношения есть ключ - {StudentId, CourseId} => отношение в 1НФ
+1.2. Результат *
+Для исходного отношения укажите на какие отношения вы его разбили в формате
+   Исходное отношение => полученное отношение ; полученное отношение ; ... .
+по одному на строке. Где все отношения заданы в формате 
+   (атрибут1, атрибут2, ...)
+Например:
+   (SellerId, GoodId, PriceId, OrderId) => (SellerId, GoodId, PriceId); 
+
+(GoodId, PriceId).
+Обратите внимание на точку в конце описания.
+
+Строки, начинающиеся с двух минусов ( -- ) будут считаться комментариями.
+Разносить разбиение отношения на несколько строк нельзя.
+Если отношение не изменилось, укажите его разбиение на одно отношение (его самого).
+(StudentId, StudentName, GroupId, GroupName, CourseId, CourseName, LecturerId, LecturerName, Mark) => (StudentId, StudentName, GroupId, GroupName, CourseId, CourseName, LecturerId, LecturerName, Mark).
+2. Вторая нормальная форма
+2.1. Описание *
+У отношения есть ключ - {StudentId, CourseId}
+Имеются неключевые атрибуты, которые функционально зависят от части ключа, а не ключа в целом. "Мешающие" ФЗ:
+StudentId → StudentName, GroupId, GroupName;
+CourseId → CourseName;
+
+{StudentId}+ = {StudentId, StudentName, GroupId, GroupName} - (1)
+Выделим это отношение и останется (StudentId, CourseId, CourseName, LecturerId, LecturerName, Mark)
+GroupId зависит от StudentId - потеряли фз GroupId, CourseId → LecturerId, LecturerName;
+{GroupId, CourseId}+ = {GroupId, CourseId, CourseName, LecturerId, LecturerName, GroupName}.
+Выделим его и останется (StudentId, CourseId, Mark) - (2)
+{CourseId}+ = {CourseId, CourseName} - (3)
+Выделим его с предыдущего пункта ({GroupId, CourseId, GroupName, CourseName, LecturerId, LecturerName}) и останется (CourseId, GroupId, LecturerId, LecturerName) - (4)
+2.2. Результат *
+Для каждого отношения из предыдущей нормальной формы укажите на какие отношения вы его разбили в формате, указанном в пункте 1.2.
+(StudentId, StudentName, GroupId, GroupName, CourseId, CourseName, LecturerId, LecturerName, Mark) => (StudentId, StudentName, GroupId, GroupName); (StudentId, CourseId, Mark); (CourseId, CourseName); (CourseId, GroupId, LecturerId, LecturerName).
+3. Третья нормальная форма
+3.1. Описание *
+Неключевые атрибуты транзитивно а не непосредственно зависят от ключей
+Декомпозируем по последней ФЗ в цепочке
+1) (StudentId, StudentName, GroupId, GroupName)
+StudentId -> StudentName, GroupId        GroupId -> GroupName - транзитивная цепочка
+Получим (StudentId, StudentName, GroupId)  (GroupId, GroupName) - (1)
+2,3) StudentId, CourseId → Mark; CourseId → CourseName; - нет транзитивных зависимостей
+4)(CourseId, GroupId, LecturerId, LecturerName)
+GroupId, CourseId → LecturerId, LecturerName       LecturerId → LecturerName - транзитивная цепочка
+Получим (CourseId, GroupId, LecturerId)  (LecturerId, LecturerName) - (2)
+3.2. Результат *
+Для каждого отношения из предыдущей нормальной формы укажите на какие отношения вы его разбили в формате, указанном в пункте 1.2.
+(StudentId, StudentName, GroupId, GroupName) => (StudentId, StudentName, GroupId); (GroupId, GroupName).
+(StudentId, CourseId, Mark) => (StudentId, CourseId, Mark).
+(CourseId, CourseName) => (CourseId, CourseName).
+(CourseId, GroupId, LecturerId, LecturerName) => (CourseId, GroupId, LecturerId); (LecturerId, LecturerName).
+Б. Нормальная форма Бойса-Кодда
+Б.1. Описание *
+В каждой нетривиальной ФЗ X -> Y, X является надключом
+(StudentId, StudentName, GroupId) - тривиальная
+(GroupId, GroupName) - тривиальная 
+(StudentId, CourseId, Mark) - {StudentId, CourseId} - надключ
+(CourseId, CourseName) - тривиальная
+(CourseId, GroupId, LecturerId) - {GroupId, CourseId} - надключ
+(LecturerId, LecturerName) - тривиальная
+Декомпозиций не произошло => 3НФ в НФБК
+Б.2. Результат *
+Для каждого отношения из предыдущей нормальной формы укажите на какие отношения вы его разбили в формате, указанном в пункте 1.2.
+(StudentId, StudentName, GroupId) => (StudentId, StudentName, GroupId). 
+(GroupId, GroupName) => (GroupId, GroupName).
+(StudentId, CourseId, Mark) => (StudentId, CourseId, Mark).
+(CourseId, CourseName) => (CourseId, CourseName).
+(CourseId, GroupId, LecturerId) => (CourseId, GroupId, LecturerId).
+(LecturerId, LecturerName) => (LecturerId, LecturerName).
+4. Четвёртая нормальная форма
+4.1. Описание *
+Для отношений из трёх и менее атрибутов должны быть приведены контрпримеры.
+По теореме Дейта-Фейгина 2 
+(StudentId, StudentName, GroupId) (GroupId, GroupName) (CourseId, CourseName) (LecturerId, LecturerName) - находятся в НФБК и существует простой ключ => находятся в 4НФ.
+Рассмотрим другие отношения 
+1) (CourseId, GroupId, LecturerId)
+Возможные MЗ: 
+CourseId ->>  GroupId | LecturerId - один курс может читаться для разных групп и разными лекторами (2) + (3)
+GroupId ->>  CourseId | LecturerId - для одной группы могут вестить разные курсы у разных лекторов (1) + (4)
+LecturerId ->>  CourseId | GroupId - один лектор может читать разным группам и разные курсы (1) + (2)
+Из пустого не рассматриваем - контрпример разные курсы могут читаться для разных групп разными лекторами. (1) + (3)
+Пример
+(LecturerId, CourseId, GroupId)
+284561 1 M2 (1)
+284561 2 M5 (2)
+284562 2 M3 (3)
+284563 3 M2 (4)
+
+Отбросили все МЗ по контрпримерам => уже в 4НФ
+1) (StudentId, CourseId, Mark)
+Возможные MЗ: 
+StudentId ->>  CourseId | Mark - один студент может ходить на разные курсы и получать на них отличные друг от друга оценки (1) + (2)
+CourseId ->>  StudentId | Mark - на один курс могут ходить разные студенты у которых будут разные оценки за него (2) + (3)
+Mark ->> StudentId | CourseId - одинаковые оценки могут получить разные ученики за разные курсы (1) + (4)
+Из пустого не рассматриваем - контрпример разные студенты могут на разных курсах получать разные оценки. (3) + (4)
+Пример
+(StudentId, CourseId, Mark)
+284561 1 2 (1)
+284561 2 5 (2)
+284562 2 3 (3)
+284563 3 2 (4)
+Отбросили все МЗ по контрпримерам => уже в 4НФ.
+
+=> 3НФ в 4НФ
+4.2. Результат *
+Для каждого отношения из предыдущей нормальной формы укажите на какие отношения вы его разбили в формате, указанном в пункте 1.2.
+(StudentId, StudentName, GroupId) => (StudentId, StudentName, GroupId). 
+(GroupId, GroupName) => (GroupId, GroupName).
+(StudentId, CourseId, Mark) => (StudentId, CourseId, Mark).
+(CourseId, CourseName) => (CourseId, CourseName).
+(CourseId, GroupId, LecturerId) => (CourseId, GroupId, LecturerId).
+(LecturerId, LecturerName) => (LecturerId, LecturerName).
+5. Пятая нормальная форма
+5.1. Описание *
+Для отношений из трёх и менее атрибутов должны быть приведены контрпримеры.
+По теореме Дейта-Фейгина 1
+(StudentId, StudentName, GroupId) (GroupId, GroupName) (CourseId, CourseName) (LecturerId, LecturerName) - находятся в 3НФ и все ключи простые => находятся в 5НФ.
+Рассмотрим другие отношения 
+1) (CourseId, GroupId, LecturerId)
+Возможная ЗС *{(CourseId, GroupId), (GroupId, LecturerId), (LecturerId, CourseId)}
+Пример
+(CourseId, GroupId, LecturerId)
+1 M2 284562
+1 M3 284563
+(CourseId, GroupId)  (GroupId, LecturerId) (LecturerId, CourseId)
+       1                М2         М2           284562         284562    1
+       1                М3          М3          284563          284563    1
+Объединим 
+(CourseId, GroupId, LecturerId)
+1 M2 284562  
+1 M3 284563
+1 M2 284563 
+При объединении получаем запись которой не было изначально, значит не ЗС
+(CourseId, GroupId, LecturerId) => 5НФ
+1) (StudentId, CourseId, Mark)
+Возможная ЗС *{(StudentId, CourseId), (CourseId, Mark), (StudentId, Mark)}
+Пример
+(StudentId, CourseId, Mark)
+284561 1 2 
+284561 2 5 
+(StudentId, CourseId) (CourseId, Mark) (StudentId, Mark)
+       284561       1         1                   2          284561    2
+       284561       2         2                   5          284561    5
+Объединим 
+(StudentId, CourseId, Mark)
+284561 1 2 
+284561 2 5 
+284561 2 2 
+При объединении получаем запись которой не было изначально, значит не ЗС
+ (StudentId, CourseId, Mark) => 5НФ
+=> 4НФ в 5НФ
+5.2. Результат *
+Для каждого отношения из предыдущей нормальной формы укажите на какие отношения вы его разбили в формате, указанном в пункте 1.2.
+(StudentId, StudentName, GroupId) => (StudentId, StudentName, GroupId). 
+(GroupId, GroupName) => (GroupId, GroupName).
+(StudentId, CourseId, Mark) => (StudentId, CourseId, Mark).
+(CourseId, CourseName) => (CourseId, CourseName).
+(CourseId, GroupId, LecturerId) => (CourseId, GroupId, LecturerId).
+(LecturerId, LecturerName) => (LecturerId, LecturerName).

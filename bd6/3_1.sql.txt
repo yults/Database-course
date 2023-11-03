@@ -1,0 +1,6 @@
+select StudentName, CourseName
+from Plan, Students
+where Plan.GroupId = Students.GroupId
+union
+select StudentId, CourseId 
+from Marks;

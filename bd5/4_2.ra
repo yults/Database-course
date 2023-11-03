@@ -1,0 +1,9 @@
+π{StudentId, StudentName, GroupId}(
+    σ{CourseName = :CourseName}(Courses) ⋈ Students ⋈ Plan) 
+∖
+π{StudentId, StudentName, GroupId}(
+    π{CourseId}(
+        σ{CourseName = :CourseName}(Courses)
+    )
+    ⋈ Students ⋈ Marks
+)

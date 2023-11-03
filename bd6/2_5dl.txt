@@ -1,0 +1,11 @@
+YesMark(StudentId) :-
+    Marks(StudentId, CourseId, Mark), 
+    Courses(CourseId, CourseName),
+    CourseName = :CourseName.
+NoMark(StudentId, StudentName, GroupName) :-
+    Students(StudentId, StudentName, GroupId),
+    Groups(GroupId, GroupName),
+    Plan(GroupId, CourseId, LecturerId),
+    Courses(CourseId, CourseName),
+    CourseName = :CourseName,
+    ¬ YesMark(StudentId).
