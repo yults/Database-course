@@ -1,0 +1,210 @@
+1.S. Индексы на таблицу Students
+*
+-- PK - выбираем хеш. Легко ищем нужные записи по StudentId 
+-- или получая его из Marks
+-- ДЗ-5.1.1 Информацию о студентах
+-- С заданным id (StudentId, StudentName, GroupId по :StudentId)
+-- ДЗ-5.2.1 Полную информацию о студентах
+-- С заданным id (StudentId, StudentName, GroupName по :StudentId)
+-- ДЗ-5.3.1 Информацию о студентах с заданной оценкой по дисциплине
+-- (StudentId, StudentName, GroupId по :Mark, :CourseId).
+create unique index SIdHash on Students using hash (StudentId);
+
+-- FK - выбираем хеш. По GroupId знаем GroupName
+-- ДЗ-5.8.3 Суммарный балл каждой группы
+-- ДЗ-5.9.3 Средний балл каждой группы
+-- ДЗ-6.1.2 Информацию о студентах Учащихся в заданной 
+-- группе (StudentId, StudentName, GroupId по :GroupName)
+create index GIdHash on Students using hash (GroupId);
+
+-- Ускоряем поиск по имени, для строк лучше btree
+-- ДЗ-5.1.2 Информацию о студентах с заданным
+-- ФИО (StudentId, StudentName, GroupId по :StudentName)
+-- ДЗ-5.2.2  Полную информацию о студентах c заданным
+-- ФИО (StudentId, StudentName, GroupName по :StudentName)
+-- ДЗ-6.1.1 Информацию о студентах с заданным
+-- ФИО (StudentId, StudentName, GroupId по :StudentName)
+create index SNTree on Students using btree (StudentName);
+1.G. Индексы на таблицу Groups
+*
+-- PK - выбираем хеш, нужен для соединений
+-- ДЗ-5.2.1 Полную информацию о студентах
+-- С заданным id (StudentId, StudentName, GroupName по :StudentId)
+-- ДЗ-5.2.2  Полную информацию о студентах c заданным
+-- ФИО (StudentId, StudentName, GroupName по :StudentName)
+-- ДЗ-5.7.2 Группы и дисциплины, такие что все студенты
+-- группы имеют оценку по этой дисциплине
+-- Названия (GroupName, CourseName)
+create unique index GIdHash on Groups using hash (GroupId);
+
+-- Группы уникальны - выбираем хеш
+-- ДЗ-6.1.2 Информацию о студентах Учащихся в заданной 
+-- группе (StudentId, StudentName, GroupId по :GroupName)
+-- ДЗ-7.2.4  Перевод всех студентов из группы в группу 
+-- по названиям (GroupName, FromGroupName)
+-- ДЗ-7.2.5 Перевод всех студентов из группы в группу, 
+-- только если целевая группа существует 
+-- (GroupName, FromGroupName).
+create unique index GNameHash on Groups using hash (GroupName);
+
+-- Ускоряем поиск по GroupName, не ходя в запись
+-- Покрывающий
+-- ДЗ-6.1.2 Информацию о студентах Учащихся в заданной 
+-- группе (StudentId, StudentName, GroupId по :GroupName)
+-- ДЗ-7.1.2 Удаление студентов
+-- Учащихся в группе, заданной названием (GroupName)
+-- ДЗ-7.2.4  Перевод всех студентов из группы в группу 
+-- по названиям (GroupName, FromGroupName)
+create index GIdNameTree on Groups using btree (GroupName, GroupId);
+1.C. Индексы на таблицу Courses
+*
+-- PK - выбираем хеш, нужен для соединений
+-- ДЗ-5.5.3 Для каждого студента ФИО и названия дисциплин
+-- Есть, но у него не 4 или 5 (StudentName, CourseName)
+-- ДЗ-5.7.2 Группы и дисциплины, такие что все студенты группы имеют
+-- оценку по этой дисциплине. Названия (GroupName, CourseName)
+-- ДЗ-6.3.2 Студенты и дисциплины, такие что у студента была
+-- дисциплина (по плану или есть оценка). Имя и название
+-- (StudentName, CourseName)
+create unique index CIdHash on Courses using hash (CourseId);
+
+-- Ускоряем поиск по CourseName, не ходя в запись
+-- Покрывающий
+-- ДЗ-5.3.2 Информацию о студентах с заданной оценкой по дисциплине
+-- (StudentId, StudentName, GroupId по :Mark, :CourseName)
+-- ДЗ-6.2.3 Полную информацию о студентах, не имеющих оценки
+-- по дисциплине, заданной названием
+-- (StudentId, StudentName, GroupName по :CourseName).
+-- ДЗ-6.2.5 Полную информацию о студентах, не имеющих оценки
+-- по дисциплине, у которых есть эта дисциплина
+-- (StudentId, StudentName, GroupName по :CourseName).
+create index CNameCIdTree on Courses using btree (CourseName, CourseId);
+1.L. Индексы на таблицу Lecturers
+*
+-- PK - выбираем хеш
+create unique index LIdHash on Lecturers using hash (LecturerId);
+
+-- Ускоряем поиск по LecturerName, не ходя в запись
+-- Покрывающий
+-- ДЗ-5.3.4 Информацию о студентах с заданной оценкой по дисциплине
+-- Которую у него вёл лектор, заданный ФИО
+-- (StudentId, StudentName, GroupId по :Mark, :LecturerName)
+-- ДЗ-6.5.1 Идентификаторы студентов по преподавателю Имеющих
+-- хотя бы одну оценку у преподавателя (StudentId по :LecturerName)
+-- ДЗ-6.5.2 Идентификаторы студентов по преподавателю Не имеющих
+-- ни одной оценки у преподавателя (StudentId по :LecturerName)
+create index LNameLIdTree on Lecturers using btree (LecturerName, LecturerId);
+1.P. Индексы на таблицу Plan
+*
+-- Проверка существования
+-- Получение GroupId по CourseId. Префикс ключа - btree
+-- ДЗ-5.4.2 Информацию о студентах не имеющих оценки по дисциплине
+-- cреди студентов, у которых есть эта дисциплина
+-- (StudentId, StudentName, GroupId по :CourseName)
+-- ДЗ-6.2.4 Полную информацию о студентах, не имеющих оценки
+-- по дисциплине, у которых есть эта дисциплина
+-- (StudentId, StudentName, GroupName по :CourseId)
+-- ДЗ-6.4.1 Студенты и дисциплины, есть в его плане,
+-- и у студента долг (StudentName, CourseName)
+create unique index CIdGIdTree on Plan using btree (CourseId, GroupId);
+
+-- Поиск курса студента. Включаем CourseId - btree 
+-- Получаем список курсов студента
+-- ДЗ-6.2.4 Полную информацию о студентах
+-- не имеющих оценки по дисциплине, у которых есть эта дисциплина
+-- (StudentId, StudentName, GroupName по :CourseId)
+-- ДЗ-7.1.6 Напишите запросы, удаляющие студентов c долгами
+-- ДЗ-7.1.7 Напишите запросы, удаляющие студентов с 2+ долга
+create unique index GIdCIdTree on Plan using btree (GroupId, CourseId);
+
+-- Доступ к Students из Lecturer через GroupId нужен btree
+-- ДЗ-5.3.4 Информацию о студентах с заданной оценкой по дисциплине,
+-- Которую у него вёл лектор, заданный ФИО
+-- (StudentId, StudentName, GroupId по :Mark, :LecturerName)
+-- ДЗ-5.3.6 Информацию о студентах с заданной оценкой по дисциплине,
+-- Которую вёл лектор, заданный ФИО
+-- (StudentId, StudentName, GroupId по :Mark, :LecturerName)
+-- ДЗ-5.6.1 Идентификаторы студентов по преподавателю,
+-- Имеющих хотя бы одну оценку у преподавателя 
+-- (StudentId по :LecturerName)
+create index LIdGId on Plan using btree (LecturerId, GroupId);
+1.M. Индексы на таблицу Marks
+*
+-- Оценка по Id студента - хеш
+-- ДЗ-5.8.1 Суммарный балл Одного студента (SumMark по :StudentId)
+-- ДЗ-5.9.1 Средний балл Одного студента (AvgMark по :StudentId)
+-- ДЗ-7.1.4 Напишите запросы, удаляющие студентов
+-- Имеющих 3 и более оценки.
+create unique index SIDHashM on Marks using hash (StudentId);
+
+-- StudentId, CourseId - ключ отношения - выбираем хеш
+-- ДЗ-6.2.4 Полную информацию о студентах
+-- не имеющих оценки по дисциплине, у которых есть эта дисциплина
+-- (StudentId, StudentName, GroupName по :CourseId)
+-- ДЗ-6.4.1 Студенты и дисциплины, есть в его плане,
+-- и у студента долг (StudentName, CourseName)
+-- ДЗ-6.6.1 Группы и дисциплины, такие что все студенты группы имеют
+-- оценку по предмету. Идентификаторы (GroupId, CourseId)
+create unique index SIdCIdHash on Marks using hash (StudentId, CourseId);
+
+-- Покрывающий по оценке курсу и студенту
+-- ДЗ-5.3.1 Информацию о студентах с заданной оценкой по дисциплине
+-- (StudentId, StudentName, GroupId по :Mark, :CourseId).
+-- ДЗ-5.4.1 Информацию о студентах не имеющих оценки по дисциплине
+-- (StudentId, StudentName, GroupId по :CourseName).
+-- ДЗ-6.2.2 Полную информацию о студентах, не имеющих оценки
+-- по дисциплине, заданной идентификатором
+-- (StudentId, StudentName, GroupName по :CourseId).
+create index MCIdSID on Marks using btree (Mark, CourseId, StudentId);
+2. Статистический запрос
+2.Q. Запрос
+*
+select avg(Mark) AvgMark
+from Students
+    natural join Marks
+    natural join Groups
+    natural join Courses
+where CourseName = :CourseName and GroupName = :GroupName;
+2.I. Индексы
+*
+Опишите все индексы, в формате из раздела 1, но без указания ускоряемого запроса (даже если индекс уже был объявлен там)
+create index MCIdSID on Marks using btree (Mark, CourseId, StudentId);
+
+create unique index GNameHash on Groups using hash (GroupName);
+
+create index CNameCIdTree on Courses using btree (CourseName, CourseId);
+3. Новые запросы
+Перед запросом в комментарии (--) укажите, что он делает
+
+Объявления индексов записываются в формате из раздела 1, без указания ускоряемого запроса. При удалении индекса укажите, почему он стал бесполезным в комментарии перед удалением.
+3.1.Q. Запрос 1
+*
+-- Оценки выставленные лектором
+select Mark
+from Marks
+    natural join Plan
+    natural join Lecturers
+    where LecturereName = :LecturerName;
+3.1.I. Дополнительные индексы для запроса 1
+*
+create index LIdCIdTree on Plan using btree (LecturerId, CourseId);
+3.2.Q. Запрос 2
+*
+-- Имена преподавателей студента
+select LecturerName
+from Students
+    natural join Plan
+    natural join Lecturers
+    where StudentId = :StudentId;
+3.2.I. Дополнительные индексы для запроса 2
+*
+create index GIdLIdTree on Plan using btree (GroupId, LecturerId);
+3.3.Q. Запрос 3
+*
+-- Имя лектора по его Id
+select LecturerName
+from Lecturers
+where LecturerId = :LecturerId;
+3.3.I. Дополнительные индексы для запроса 3
+*
+create unique index LIdHash on Lecturers using hash (LecturerId);
