@@ -1,0 +1,7 @@
+Solved(TeamId) :-
+    Runs(_, SessionId, :Letter, _, 1),
+	Sessions(SessionId, TeamId, :ContestId, _).
+
+NotS(TeamName) :-
+	Teams(TeamId, TeamName),
+	¬ Solved(TeamId).

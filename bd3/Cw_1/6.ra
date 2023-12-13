@@ -1,0 +1,1 @@
+π{ProblemName}(π{Letter, ProblemName}(Problems) ∖ π{Letter, ProblemName}(Problems ⋈ Runs))

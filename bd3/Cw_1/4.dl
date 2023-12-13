@@ -1,0 +1,12 @@
+Ok(SessionId, ContestId, Letter) :-
+	Sessions(SessionId, _, :ContestId, _),
+	Runs(_, SessionId, Letter, _, 1).
+
+NotOk(ContestId, Letter) :-
+    Problems(ContestId, Letter, _),
+	Sessions(SessionId, _, :ContestId, _),
+    ¬ Ok(SessionId, ContestId, Letter).
+
+Res(ContestId, Letter) :-
+    Problems(ContestId, Letter, _),
+    ¬ NotOk(ContestId, Letter).
